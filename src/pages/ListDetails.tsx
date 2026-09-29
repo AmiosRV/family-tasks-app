@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { supabase } from "../services/supabase";
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { supabase } from '../services/supabase';
  
 export default function ListDetails() {
 const { id } = useParams();
@@ -12,19 +12,18 @@ loadItems();
  
 async function loadItems() {
 const { data, error } = await supabase
-.from("list_items")
-.select("*")
-.eq("list_id", String(id));
+.from('list_items')
+.select('*')
+.eq('list_id', String(id));
  
 if (error) {
 console.error(error);
-setItems(data || []);
 return;
 }
  
 setItems(data || []);
 }
-
+ 
 return (
 <div>
 <h1>Список</h1>
@@ -35,7 +34,6 @@ return (
 {item.title}
 </div>
 ))}
-
 </div>
 );
 }
