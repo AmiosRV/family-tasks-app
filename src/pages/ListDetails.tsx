@@ -5,15 +5,28 @@ import { supabase } from '../services/supabase';
 export default function ListDetails() {
 const { id } = useParams();
 const [items, setItems] = useState<any[]>([]);
+const [listTitle, setListTitle] = useState('');
  
 useEffect(() => {
+loadList();
 loadItems();
 }, []);
  
+async function loadList() {
+const { data } = await supabase
+.from('lists')
+.select('*')
+.eq('id', String(id))
+.single();
+ 
+if (data) {
+setListTitle(data.title);
+}
 async function loadItems() {
 const { data, error } = await supabase
 .from('list_items')
-.select('*');
+.select('*')
+.eq('list_id', String(id));;
  
 if (error) {
 console.error(error);
@@ -26,7 +39,7 @@ setItems(data || []);
 return (
 <div>
 <h1>Список</h1>
-<p>ID: {id}</p>
+<h2>{listTitle}</h2>
  
 {items.map((item) => (
 <div key={item.id}>
