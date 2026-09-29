@@ -13,8 +13,7 @@ loadItems();
 async function loadItems() {
 const { data, error } = await supabase
 .from('list_items')
-.select('*')
-.eq('list_id', String(id));
+.select('*');
  
 if (error) {
 console.error(error);
