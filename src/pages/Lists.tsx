@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "../services/supabase";
  
 type List = {
@@ -66,7 +67,9 @@ onChange={(e) => setTitle(e.target.value)}
 
 {lists.map((list) => (
 <div key={list.id}>
+<Link to={`/lists/${list.id}`}>
 {list.title}
+</Link>
 </div>
 ))}
 
