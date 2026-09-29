@@ -22,6 +22,7 @@ const { data } = await supabase
 if (data) {
 setListTitle(data.title);
 }
+}
 async function loadItems() {
 const { data, error } = await supabase
 .from('list_items')
