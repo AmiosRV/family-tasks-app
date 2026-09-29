@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Lists from "./pages/Lists";
 import Reminders from "./pages/Reminders";
 import Settings from "./pages/Settings";
+import ListDetails from "./pages/ListDetails";
  
 function App() {
 return (
@@ -20,6 +21,7 @@ return (
 <Routes>
 <Route path="/" element={<Home />} />
 <Route path="/lists" element={<Lists />} />
+<Route path="/lists/:id" element={<ListDetails />} />
 <Route path="/reminders" element={<Reminders />} />
 <Route path="/settings" element={<Settings />} />
 </Routes>
