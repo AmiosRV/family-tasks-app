@@ -52,7 +52,7 @@ return (
 <h1>Списки</h1>
  
 <button onClick={() => setShowForm(!showForm)}>
-Добавить покупку
+Создать список
 </button>
 
 {showForm && (
