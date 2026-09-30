@@ -72,22 +72,15 @@ setNewItem('');
 loadItems();
 }
 async function toggleDone(item: any) {
-const { data, error } = await supabase
+const { error } = await supabase
 .from('list_items')
 .update({ done: !item.done })
-.eq('id', item.id)
-.select();
+.eq('id', item.id);
  
-console.log('UPDATE RESULT:', data);
-console.log('UPDATE ERROR:', error);
- 
-if (error) {
 alert(JSON.stringify(error));
-}
  
 loadItems();
 }
-
 return (
 <div>
 <h1>Список</h1>
