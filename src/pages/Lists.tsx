@@ -10,6 +10,7 @@ title: string;
 export default function Lists() {
 const [lists, setLists] = useState<List[]>([]);
 const [title, setTitle] = useState("");
+const [showForm, setShowForm] = useState(false);
  
 useEffect(() => {
 loadLists();
@@ -50,20 +51,25 @@ return (
 <div>
 <h1>Списки</h1>
  
-<button>
-Создать список
+<button onClick={() => setShowForm(!showForm)}>
+Добавить покупку
 </button>
 
+{showForm && (
+<>
 <input
 type="text"
-placeholder="Название списка"
+placeholder="Что купить?"
 value={title}
 onChange={(e) => setTitle(e.target.value)}
 />
-
+ 
 <button onClick={createList}>
 Сохранить
 </button>
+</>
+)}
+Показать больше строк
 
 {lists.map((list) => (
 <div key={list.id}>
