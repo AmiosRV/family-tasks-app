@@ -71,7 +71,15 @@ return;
 setNewItem('');
 loadItems();
 }
- 
+async function toggleDone(item: any) {
+await supabase
+.from('list_items')
+.update({ done: !item.done })
+.eq('id', item.id);
+ 
+loadItems();
+}
+
 return (
 <div>
 <h1>Список</h1>
@@ -89,6 +97,12 @@ onChange={(e) => setNewItem(e.target.value)}
  
 {items.map((item) => (
 <div key={item.id}>
+<input
+type="checkbox"
+checked={item.done || false}
+onChange={() => toggleDone(item)}
+/>
+ 
 {item.title}
  
 <button onClick={() => deleteItem(item.id)}>
@@ -96,6 +110,7 @@ onChange={(e) => setNewItem(e.target.value)}
 </button>
 </div>
 ))}
+ 
 </div>
 );
 }
