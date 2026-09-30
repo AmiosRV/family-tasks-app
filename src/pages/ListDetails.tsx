@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabase';
@@ -35,12 +34,25 @@ if (error) {
 console.error(error);
 return;
 }
- 
+ 
 setItems(data || []);
+}
+async function deleteItem(itemId: string) {
+const { error } = await supabase
+.from('list_items')
+.delete()
+.eq('id', itemId);
+ 
+if (error) {
+alert(JSON.stringify(error));
+return;
+}
+ 
+loadItems();
 }
 async function addItem() {
 if (!newItem.trim()) return;
- 
+ 
 const { error } = await supabase
 .from('list_items')
 .insert([
@@ -49,13 +61,13 @@ list_id: id,
 title: newItem,
 },
 ]);
- 
+ 
 if (error) {
 alert(JSON.stringify(error));
 console.error(error);
 return;
 }
- 
+ 
 setNewItem('');
 loadItems();
 }
@@ -78,6 +90,10 @@ onChange={(e) => setNewItem(e.target.value)}
 {items.map((item) => (
 <div key={item.id}>
 {item.title}
+ 
+<button onClick={() => deleteItem(item.id)}>
+Удалить
+</button>
 </div>
 ))}
 </div>
