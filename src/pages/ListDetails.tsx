@@ -51,6 +51,7 @@ title: newItem,
 ]);
  
 if (error) {
+alert(JSON.stringify(error));
 console.error(error);
 return;
 }
