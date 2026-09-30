@@ -83,16 +83,20 @@ return (
 <div>
 <h1>Список</h1>
 <h2>{listTitle}</h2>
+{listTitle === 'Покупки' && (
+<>
 <input
 type="text"
 placeholder="Что купить?"
 value={newItem}
 onChange={(e) => setNewItem(e.target.value)}
 />
- 
+ 
 <button onClick={addItem}>
 Добавить покупку
 </button>
+</>
+)}
  
 {items.map((item) => (
 <div key={item.id}>
