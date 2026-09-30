@@ -69,7 +69,6 @@ onChange={(e) => setTitle(e.target.value)}
 </button>
 </>
 )}
-Показать больше строк
 
 {lists.map((list) => (
 <div key={list.id}>
