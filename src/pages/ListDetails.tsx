@@ -103,7 +103,13 @@ checked={item.done || false}
 onChange={() => toggleDone(item)}
 />
  
+<span
+style={{
+textDecoration: item.done ? 'line-through' : 'none'
+}}
+>
 {item.title}
+</span>
  
 <button onClick={() => deleteItem(item.id)}>
 Удалить
