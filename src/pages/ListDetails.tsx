@@ -122,6 +122,7 @@ key={item.id}
 style={{
 display: 'flex',
 alignItems: 'center',
+justifyContent: 'center',
 gap: '10px',
 marginBottom: '8px'
 }}
