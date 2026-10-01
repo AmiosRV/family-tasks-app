@@ -24,14 +24,18 @@ setReminders(data || []);
 async function addReminder() {
 if (!title.trim()) return;
  
-const { error } = await supabase
+const { data, error } = await supabase
 .from('reminders')
 .insert([
 {
 title,
 due_date: dueDate || null,
 },
-]);
+])
+.select();
+ 
+console.log('DATA:', data);
+console.log('ERROR:', error);
  
 if (!error) {
 setTitle('');
@@ -39,6 +43,7 @@ setDueDate('');
 loadReminders();
 }
 }
+``
  
 return (
 <div>
