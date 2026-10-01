@@ -69,7 +69,8 @@ onChange={(e) => setDueDate(e.target.value)}
 {reminders.map((reminder) => (
 <li key={reminder.id}>
 {reminder.title}
-{reminder.due_date && ` (${reminder.due_date})`}
+{reminder.due_date &&
+` (${new Date(reminder.due_date).toLocaleDateString('de-DE')})`}
 </li>
 ))}
 </ul>
