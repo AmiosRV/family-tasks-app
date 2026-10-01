@@ -117,7 +117,15 @@ onChange={(e) => setNewItem(e.target.value)}
 )}
  
 {items.map((item) => (
-<div key={item.id}>
+<div
+key={item.id}
+style={{
+display: 'flex',
+alignItems: 'center',
+gap: '10px',
+marginBottom: '8px'
+}}
+>
 <input
 type="checkbox"
 checked={item.done || false}
@@ -126,17 +134,31 @@ onChange={() => toggleDone(item)}
  
 <span
 style={{
-textDecoration: item.done ? 'line-through' : 'none'
+textDecoration: item.done ? 'line-through' : 'none',
+minWidth: '200px',
+display: 'inline-block'
 }}
 >
 {item.title}
 </span>
  
-<button onClick={() => editItem(item)}>
+<button
+onClick={() => editItem(item)}
+style={{
+padding: '4px 8px',
+cursor: 'pointer'
+}}
+>
 Изменить
 </button>
  
-<button onClick={() => deleteItem(item.id)}>
+<button
+onClick={() => deleteItem(item.id)}
+style={{
+padding: '4px 8px',
+cursor: 'pointer'
+}}
+>
 Удалить
 </button>
 </div>
