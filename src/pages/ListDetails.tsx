@@ -79,6 +79,24 @@ await supabase
  
 loadItems();
 }
+async function editItem(item: any) {
+const newTitle = prompt('Новое название:', item.title);
+ 
+if (!newTitle) return;
+ 
+const { error } = await supabase
+.from('list_items')
+.update({ title: newTitle })
+.eq('id', item.id);
+ 
+if (error) {
+alert(JSON.stringify(error));
+return;
+}
+ 
+loadItems();
+}
+ 
 return (
 <div>
 <h1>Список</h1>
@@ -113,6 +131,10 @@ textDecoration: item.done ? 'line-through' : 'none'
 >
 {item.title}
 </span>
+ 
+<button onClick={() => editItem(item)}>
+Изменить
+</button>
  
 <button onClick={() => deleteItem(item.id)}>
 Удалить
