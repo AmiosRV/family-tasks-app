@@ -57,6 +57,38 @@ loadReminders();
 }
 }
  
+async function deleteReminder(id: string) {
+const { error } = await supabase
+.from('reminders')
+.delete()
+.eq('id', id);
+ 
+if (!error) {
+loadReminders();
+}
+}
+async function editReminder(
+id: string,
+currentTitle: string
+) {
+const newTitle = prompt(
+'Изменить напоминание:',
+currentTitle
+);
+ 
+if (!newTitle || !newTitle.trim()) return;
+ 
+const { error } = await supabase
+.from('reminders')
+.update({
+title: newTitle,
+})
+.eq('id', id);
+ 
+if (!error) {
+loadReminders();
+}
+}
 return (
 <div>
 <h1>Напоминания</h1>
@@ -104,6 +136,25 @@ marginLeft: '8px',
  
 {reminder.due_date &&
 ` (${new Date(reminder.due_date).toLocaleDateString('de-DE')})`}
+ 
+<button
+onClick={() =>
+editReminder(
+reminder.id,
+reminder.title
+)
+}
+style={{ marginLeft: '10px' }}
+>
+✏️
+</button>
+ 
+<button
+onClick={() => deleteReminder(reminder.id)}
+style={{ marginLeft: '5px' }}
+>
+🗑
+</button>
 </li>
 ))}
 </ul>
