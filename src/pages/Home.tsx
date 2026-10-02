@@ -134,6 +134,7 @@ marginLeft: '6px',
 <ul>
 {upcomingReminders.map((reminder) => (
 <li key={reminder.id}>
+📅 {reminder.title}
 {reminder.title}
  
 {reminder.due_date &&
