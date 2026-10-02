@@ -150,6 +150,20 @@ style={{
 textDecoration: reminder.is_completed
 ? 'line-through'
 : 'none',
+ 
+color:
+!reminder.is_completed &&
+reminder.due_date &&
+(() => {
+const deadline = new Date(
+`${reminder.due_date.split('T')[0]}T${reminder.reminder_time || '23:59'}`
+);
+ 
+return deadline < new Date();
+})()
+? 'red'
+: 'inherit',
+ 
 marginLeft: '8px',
 }}
 >
@@ -166,7 +180,24 @@ marginLeft: '8px',
 )
 </>
 )}
+ {!reminder.is_completed &&
+(() => {
+const deadline = new Date(
+`${reminder.due_date.split('T')[0]}T${reminder.reminder_time || '23:59'}`
+);
  
+return deadline < new Date();
+})() && (
+<span
+style={{
+color: 'red',
+fontWeight: 'bold',
+marginLeft: '8px',
+}}
+>
+Просрочено
+</span>
+)}
 <button
 onClick={() =>
 editReminder(
