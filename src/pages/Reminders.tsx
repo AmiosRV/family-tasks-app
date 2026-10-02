@@ -4,6 +4,8 @@ import { supabase } from '../services/supabase';
 export default function Reminders() {
 const [title, setTitle] = useState('');
 const [dueDate, setDueDate] = useState('');
+const [reminderTime, setReminderTime] = useState('');
+
 const [reminders, setReminders] = useState<any[]>([]);
  
 useEffect(() => {
@@ -30,6 +32,7 @@ const { data, error } = await supabase
 {
 title,
 due_date: dueDate || null,
+reminder_time: reminderTime || null,
 },
 ])
 .select();
@@ -70,7 +73,8 @@ loadReminders();
 async function editReminder(
 id: string,
 currentTitle: string,
-currentDate: string | null
+currentDate: string | null,
+currentTime: string | null
 ) {
 const newTitle = prompt(
 'Изменить напоминание:',
@@ -84,11 +88,17 @@ const newDate = prompt(
 currentDate || ''
 );
  
+const newTime = prompt(
+'Время (HH:MM):',
+currentTime || ''
+);
+ 
 const { error } = await supabase
 .from('reminders')
 .update({
 title: newTitle,
 due_date: newDate || null,
+reminder_time: newTime || null,
 })
 .eq('id', id);
  
@@ -111,7 +121,12 @@ type="date"
 value={dueDate}
 onChange={(e) => setDueDate(e.target.value)}
 />
- 
+ <input
+type="time"
+value={reminderTime}
+onChange={(e) => setReminderTime(e.target.value)}
+/>
+
 <button onClick={addReminder}>
 Добавить
 </button>
@@ -141,15 +156,24 @@ marginLeft: '8px',
 {reminder.title}
 </span>
  
-{reminder.due_date &&
-` (${new Date(reminder.due_date).toLocaleDateString('de-DE')})`}
+{reminder.due_date && (
+<>
+{' '}
+(
+{new Date(reminder.due_date).toLocaleDateString('de-DE')}
+{reminder.reminder_time &&
+` ${reminder.reminder_time.slice(0, 5)}`}
+)
+</>
+)}
  
 <button
 onClick={() =>
 editReminder(
 reminder.id,
 reminder.title,
-reminder.due_date
+reminder.due_date,
+reminder.reminder_time
 )
 }
 style={{ marginLeft: '10px' }}
