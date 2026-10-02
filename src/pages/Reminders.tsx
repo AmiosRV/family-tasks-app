@@ -43,7 +43,19 @@ setDueDate('');
 loadReminders();
 }
 }
-``
+async function toggleCompleted(
+id: string,
+currentValue: boolean
+) {
+const { error } = await supabase
+.from('reminders')
+.update({ is_completed: !currentValue })
+.eq('id', id);
+ 
+if (!error) {
+loadReminders();
+}
+}
  
 return (
 <div>
@@ -68,7 +80,28 @@ onChange={(e) => setDueDate(e.target.value)}
 <ul>
 {reminders.map((reminder) => (
 <li key={reminder.id}>
+<input
+type="checkbox"
+checked={reminder.is_completed}
+onChange={() =>
+toggleCompleted(
+reminder.id,
+reminder.is_completed
+)
+}
+/>
+ 
+<span
+style={{
+textDecoration: reminder.is_completed
+? 'line-through'
+: 'none',
+marginLeft: '8px',
+}}
+>
 {reminder.title}
+</span>
+ 
 {reminder.due_date &&
 ` (${new Date(reminder.due_date).toLocaleDateString('de-DE')})`}
 </li>
