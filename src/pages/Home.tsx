@@ -12,16 +12,24 @@ loadTodayReminders();
  
 async function loadTodayReminders() {
 const today = new Date().toISOString().split('T')[0];
- 
-const { data, error } = await supabase
+ const { data, error } = await supabase
 .from('reminders')
 .select('*')
 .eq('due_date', today)
 .eq('is_completed', false)
 .order('reminder_time', { ascending: true });
- 
 if (!error) {
-setTodayReminders(data || []);
+const now = new Date();
+ 
+const filteredToday = (data || []).filter((r) => {
+const deadline = new Date(
+`${r.due_date}T${r.reminder_time || '23:59'}`
+);
+ 
+return deadline >= now;
+});
+ 
+setTodayReminders(filteredToday);
 }
  
 const { data: allReminders } = await supabase
@@ -30,13 +38,18 @@ const { data: allReminders } = await supabase
 .eq('is_completed', false);
  
 if (allReminders) {
+    console.log('TODAY:', today);
+console.log(JSON.stringify(allReminders, null, 2));
+
 const now = new Date();
  
 const overdue = allReminders.filter((r) => {
 if (!r.due_date) return false;
  
+const dateOnly = r.due_date.split('T')[0];
+ 
 const deadline = new Date(
-`${r.due_date}T${r.reminder_time || '23:59'}`
+`${dateOnly}T${r.reminder_time || '23:59'}`
 );
  
 return deadline < now;
@@ -44,14 +57,19 @@ return deadline < now;
  
 const upcoming = allReminders
 .filter((r) => {
-if (!r.due_date) return false;
+if (!r.due_date) {
+return false;
+}
+ 
+const dateOnly =
+String(r.due_date).split('T')[0];
  
 const deadline = new Date(
-`${r.due_date}T${r.reminder_time || '23:59'}`
+`${dateOnly}T${r.reminder_time || '23:59'}`
 );
  
 return deadline >= now &&
-r.due_date !== today;
+dateOnly !== today;
 })
 .sort(
 (a, b) =>
@@ -63,6 +81,8 @@ new Date(
 ).getTime()
 )
 .slice(0, 5);
+console.log('OVERDUE RESULT', overdue);
+console.log('UPCOMING RESULT', upcoming);
  
 setOverdueReminders(overdue);
 setUpcomingReminders(upcoming);
@@ -77,7 +97,8 @@ return (
 <ul>
 {todayReminders.map((reminder) => (
 <li key={reminder.id}>
-{reminder.title}
+🟢 {reminder.title}
+ 
 {reminder.reminder_time &&
 ` (${reminder.reminder_time.slice(0, 5)})`}
 </li>
@@ -89,7 +110,21 @@ return (
 <ul>
 {overdueReminders.map((reminder) => (
 <li key={reminder.id}>
-{reminder.title}
+🔴 {reminder.title}
+ 
+<span
+style={{
+color: 'red',
+fontWeight: 'bold',
+marginLeft: '6px',
+}}
+>
+{reminder.due_date &&
+`(${new Date(reminder.due_date).toLocaleDateString('de-DE')})`}
+ 
+{reminder.reminder_time &&
+` ${reminder.reminder_time.slice(0, 5)}`}
+</span>
 </li>
 ))}
 </ul>

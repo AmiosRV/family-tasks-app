@@ -5,7 +5,6 @@ export default function Reminders() {
 const [title, setTitle] = useState('');
 const [dueDate, setDueDate] = useState('');
 const [reminderTime, setReminderTime] = useState('');
-
 const [reminders, setReminders] = useState<any[]>([]);
  
 useEffect(() => {
@@ -156,7 +155,7 @@ color:
 reminder.due_date &&
 (() => {
 const deadline = new Date(
-`${reminder.due_date.split('T')[0]}T${reminder.reminder_time || '23:59'}`
+`${String(reminder.due_date).split('T')[0]}T${reminder.reminder_time || '23:59'}`
 );
  
 return deadline < new Date();
@@ -182,8 +181,10 @@ marginLeft: '8px',
 )}
  {!reminder.is_completed &&
 (() => {
+if (!reminder.due_date) return false;
+ 
 const deadline = new Date(
-`${reminder.due_date.split('T')[0]}T${reminder.reminder_time || '23:59'}`
+`${String(reminder.due_date).split('T')[0]}T${reminder.reminder_time || '23:59'}`
 );
  
 return deadline < new Date();
