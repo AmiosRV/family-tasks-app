@@ -69,7 +69,8 @@ loadReminders();
 }
 async function editReminder(
 id: string,
-currentTitle: string
+currentTitle: string,
+currentDate: string | null
 ) {
 const newTitle = prompt(
 'Изменить напоминание:',
@@ -78,10 +79,16 @@ currentTitle
  
 if (!newTitle || !newTitle.trim()) return;
  
+const newDate = prompt(
+'Дата (YYYY-MM-DD):',
+currentDate || ''
+);
+ 
 const { error } = await supabase
 .from('reminders')
 .update({
 title: newTitle,
+due_date: newDate || null,
 })
 .eq('id', id);
  
@@ -141,7 +148,8 @@ marginLeft: '8px',
 onClick={() =>
 editReminder(
 reminder.id,
-reminder.title
+reminder.title,
+reminder.due_date
 )
 }
 style={{ marginLeft: '10px' }}
