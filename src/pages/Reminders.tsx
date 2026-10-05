@@ -42,6 +42,8 @@ loadReminders();
 }
 }
 async function toggleCompleted(reminder: any) {
+console.log('TOGGLE CLICK');
+console.log(reminder);
 // обычная задача
 if (
 !reminder.repeat_type ||
@@ -53,7 +55,8 @@ const { error } = await supabase
 is_completed: !reminder.is_completed,
 })
 .eq('id', reminder.id);
-if (!error) {
+if (!error) {+
+console.log('DONE');   
 loadReminders();
 }
 return;
