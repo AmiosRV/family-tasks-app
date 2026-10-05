@@ -5,7 +5,20 @@ export default function Home() {
 const [todayReminders, setTodayReminders] = useState<any[]>([]);
 const [overdueReminders, setOverdueReminders] = useState<any[]>([]);
 const [upcomingReminders, setUpcomingReminders] = useState<any[]>([]);
+async function enableNotifications() {
+if (!('Notification' in window)) {
+alert('Браузер не поддерживает уведомления');
+return;
+}
  
+const permission = await Notification.requestPermission();
+ 
+if (permission === 'granted') {
+new Notification('Уведомления включены', {
+body: 'Теперь напоминания смогут показываться',
+});
+}
+} 
 useEffect(() => {
 loadTodayReminders();
 }, []);
@@ -92,6 +105,36 @@ return (
 <div>
 <h1>Главная</h1>
  
+<button onClick={enableNotifications}>
+🔔 Включить уведомления
+</button>
+ 
+<button
+onClick={() => {
+console.log("Permission:", Notification.permission);
+alert("Permission: " + Notification.permission);
+}}
+>
+Проверить статус
+</button>
+
+<button
+onClick={() => {
+try {
+new Notification("Тест", {
+body: "Уведомление работает",
+});
+ 
+alert("Notification создан");
+} catch (error) {
+console.error(error);
+alert("Ошибка Notification");
+}
+}}
+>
+Тест Notification
+</button>
+
 <h2>Сегодня</h2>
  
 <ul>
