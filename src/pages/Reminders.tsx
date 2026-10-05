@@ -42,6 +42,7 @@ loadReminders();
 }
 }
 async function toggleCompleted(reminder: any) {
+alert('TOGGLE');   
 console.log('TOGGLE CLICK');
 console.log(reminder);
 // обычная задача
