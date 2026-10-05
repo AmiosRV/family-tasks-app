@@ -55,7 +55,7 @@ const { error } = await supabase
 is_completed: !reminder.is_completed,
 })
 .eq('id', reminder.id);
-if (!error) {+
+if (!error) {
 console.log('DONE');   
 loadReminders();
 }
