@@ -193,7 +193,10 @@ onChange={(e) => setRepeatType(e.target.value)}
 <input
 type="checkbox"
 checked={reminder.is_completed}
-onChange={() => toggleCompleted(reminder)}
+onChange={() => {
+alert('CLICK');
+toggleCompleted(reminder);
+}}
 />
 <span
 style={{
