@@ -25,7 +25,7 @@ loadTodayReminders();
  
 async function loadTodayReminders() {
 const today = new Date().toISOString().split('T')[0];
- const { data, error } = await supabase
+const { data, error } = await supabase
 .from('reminders')
 .select('*')
 .eq('due_date', today)
@@ -49,11 +49,7 @@ const { data: allReminders } = await supabase
 .from('reminders')
 .select('*')
 .eq('is_completed', false);
- 
 if (allReminders) {
-    console.log('TODAY:', today);
-console.log(JSON.stringify(allReminders, null, 2));
-
 const now = new Date();
  
 const overdue = allReminders.filter((r) => {
@@ -94,8 +90,6 @@ new Date(
 ).getTime()
 )
 .slice(0, 5);
-console.log('OVERDUE RESULT', overdue);
-console.log('UPCOMING RESULT', upcoming);
  
 setOverdueReminders(overdue);
 setUpcomingReminders(upcoming);
@@ -109,50 +103,23 @@ return (
 🔔 Включить уведомления
 </button>
  
-<button
-onClick={() => {
-console.log("Permission:", Notification.permission);
-alert("Permission: " + Notification.permission);
-}}
->
-Проверить статус
-</button>
-
-<button
-onClick={() => {
-try {
-new Notification("Тест", {
-body: "Уведомление работает",
-});
- 
-alert("Notification создан");
-} catch (error) {
-console.error(error);
-alert("Ошибка Notification");
-}
-}}
->
-Тест Notification
-</button>
-
 <h2>Сегодня</h2>
  
-<ul>
+<div>
 {todayReminders.map((reminder) => (
-<li key={reminder.id}>
+<div key={reminder.id}>
 🟢 {reminder.title}
- 
 {reminder.reminder_time &&
 ` (${reminder.reminder_time.slice(0, 5)})`}
-</li>
+</div>
 ))}
-</ul>
+</div>
  
 <h2>Просрочено</h2>
  
-<ul>
+<div>
 {overdueReminders.map((reminder) => (
-<li key={reminder.id}>
+<div key={reminder.id}>
 🔴 {reminder.title}
  
 <span
@@ -168,15 +135,15 @@ marginLeft: '6px',
 {reminder.reminder_time &&
 ` ${reminder.reminder_time.slice(0, 5)}`}
 </span>
-</li>
+</div>
 ))}
-</ul>
+</div>
  
 <h2>Ближайшие</h2>
  
-<ul>
+<div>
 {upcomingReminders.map((reminder) => (
-<li key={reminder.id}>
+<div key={reminder.id}>
 📅 {reminder.title}
  
 {reminder.due_date &&
@@ -184,9 +151,9 @@ marginLeft: '6px',
  
 {reminder.reminder_time &&
 ` ${reminder.reminder_time.slice(0, 5)}`}
-</li>
+</div>
 ))}
-</ul>
+</div>
 </div>
 );
 }
