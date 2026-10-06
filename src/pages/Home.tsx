@@ -21,6 +21,13 @@ body: 'Теперь напоминания смогут показываться
 } 
 useEffect(() => {
 loadTodayReminders();
+checkNotifications();
+ 
+const interval = setInterval(() => {
+checkNotifications();
+}, 60000);
+ 
+return () => clearInterval(interval);
 }, []);
  
 async function loadTodayReminders() {
@@ -93,6 +100,40 @@ new Date(
  
 setOverdueReminders(overdue);
 setUpcomingReminders(upcoming);
+}
+}
+async function checkNotifications() {
+if (Notification.permission !== 'granted') return;
+ 
+const now = new Date();
+ 
+const { data } = await supabase
+.from('reminders')
+.select('*')
+.eq('is_completed', false)
+.eq('notified', false);
+ 
+if (!data) return;
+ 
+for (const reminder of data) {
+if (!reminder.due_date || !reminder.reminder_time) {
+continue;
+}
+ 
+const reminderDate = new Date(
+`${reminder.due_date}T${reminder.reminder_time}`
+);
+ 
+if (reminderDate <= now) {
+new Notification('🔔 Напоминание', {
+body: reminder.title,
+});
+ 
+await supabase
+.from('reminders')
+.update({ notified: true })
+.eq('id', reminder.id);
+}
 }
 }
 return (

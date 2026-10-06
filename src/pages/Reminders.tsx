@@ -28,6 +28,7 @@ title,
 due_date: dueDate || null,
 reminder_time: reminderTime || null,
 repeat_type: repeatType,
+notified: false,
 }
 ])
 .select();
