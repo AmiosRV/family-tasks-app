@@ -6,6 +6,7 @@ const [dueDate, setDueDate] = useState('');
 const [reminderTime, setReminderTime] = useState('');
 const [repeatType, setRepeatType] = useState('none');
 const [reminders, setReminders] = useState<any[]>([]);
+const [search, setSearch] = useState('');
 useEffect(() => {
 loadReminders();
 }, []);
@@ -157,9 +158,20 @@ if (!error) {
 loadReminders();
 }
 }
+const filteredReminders = reminders.filter((reminder) =>
+reminder.title
+.toLowerCase()
+.includes(search.toLowerCase())
+);
 return (
 <div>
 <h1>Напоминания</h1>
+<input
+type="text"
+value={search}
+onChange={(e) => setSearch(e.target.value)}
+placeholder="🔍 Поиск..."
+/>
 <input
 value={title}
 onChange={(e) => setTitle(e.target.value)}
@@ -189,7 +201,7 @@ onChange={(e) => setRepeatType(e.target.value)}
 Добавить
 </button>
 <ul>
-{reminders.map((reminder) => (
+{filteredReminders.map((reminder) => (
 <li key={reminder.id}>
 <input
 type="checkbox"
