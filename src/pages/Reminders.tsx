@@ -128,6 +128,19 @@ if (!error) {
 loadReminders();
 }
 }
+async function restoreReminder(id: string) {
+  const { error } = await supabase
+    .from('reminders')
+    .update({
+      is_completed: false,
+      notified: false,
+    })
+    .eq('id', id);
+
+  if (!error) {
+    loadReminders();
+  }
+}
 async function editReminder(
 id: string,
 currentTitle: string,
@@ -288,14 +301,18 @@ reminder.due_date,
 reminder.reminder_time
 )
 }
-style={{ marginLeft: '10px' }}
 >
 ✏️
 </button>
-<button
-onClick={() => deleteReminder(reminder.id)}
+<button 
+onClick={() => restoreReminder(reminder.id)} 
 style={{ marginLeft: '5px' }}
->
+> 
+♻
+<button 
+onClick={() => deleteReminder(reminder.id)} 
+style={{ marginLeft: '5px' }}
+></button>
 🗑
 </button>
 </li>
