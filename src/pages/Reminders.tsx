@@ -120,13 +120,18 @@ return;
 loadReminders();
 }
 async function deleteReminder(id: string) {
-const { error } = await supabase
-.from('reminders')
-.delete()
-.eq('id', id);
-if (!error) {
-loadReminders();
-}
+  console.log('DELETE', id);
+
+  const { error } = await supabase
+    .from('reminders')
+    .delete()
+    .eq('id', id);
+
+  console.log('DELETE ERROR:', error);
+
+  if (!error) {
+    loadReminders();
+  }
 }
 async function restoreReminder(id: string) {
   const { error } = await supabase
@@ -309,10 +314,11 @@ onClick={() => restoreReminder(reminder.id)}
 style={{ marginLeft: '5px' }}
 > 
 ♻
+</button>
 <button 
 onClick={() => deleteReminder(reminder.id)} 
 style={{ marginLeft: '5px' }}
-></button>
+>
 🗑
 </button>
 </li>
