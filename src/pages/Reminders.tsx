@@ -7,6 +7,7 @@ const [reminderTime, setReminderTime] = useState('');
 const [repeatType, setRepeatType] = useState('none');
 const [reminders, setReminders] = useState<any[]>([]);
 const [search, setSearch] = useState('');
+const [showArchive, setShowArchive] = useState(false);
 useEffect(() => {
 loadReminders();
 }, []);
@@ -158,20 +159,27 @@ if (!error) {
 loadReminders();
 }
 }
-const filteredReminders = reminders.filter((reminder) =>
-reminder.title
-.toLowerCase()
-.includes(search.toLowerCase())
-);
+const filteredReminders = reminders
+  .filter((reminder) =>
+    showArchive
+      ? reminder.is_completed
+      : !reminder.is_completed
+  )
+  .filter((reminder) =>
+    reminder.title
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
 return (
 <div>
-<h1>Напоминания</h1>
+<h1>{showArchive ? 'Архив напоминаний' : 'Напоминания'}</h1>
 <input
 type="text"
 value={search}
 onChange={(e) => setSearch(e.target.value)}
 placeholder="🔍 Поиск..."
 />
+<button onClick={() => setShowArchive(!showArchive)}>{showArchive ? 'Активные' : 'Архив'}</button>
 <input
 value={title}
 onChange={(e) => setTitle(e.target.value)}
