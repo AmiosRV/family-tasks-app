@@ -5,6 +5,7 @@ import Reminders from "./pages/Reminders";
 import Settings from "./pages/Settings";
 import ListDetails from "./pages/ListDetails";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
 return (
 <div>
@@ -22,6 +23,7 @@ return (
 <Route path="/reminders" element={<Reminders />} />
 <Route path="/settings" element={<Settings />} />
 <Route path="/login" element={<Login />} />
+<Route path="/reset-password" element={<ResetPassword />} />
 </Routes>
 </div>
 );
