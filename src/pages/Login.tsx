@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
@@ -5,6 +6,7 @@ import { supabase } from "../services/supabase";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -69,11 +71,20 @@ function Login() {
       <br />
 
       <input
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder="Пароль"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        autoComplete="current-password"
       />
+
+      <button
+        type="button"
+        onClick={() => setShowPassword((prev) => !prev)}
+        disabled={loading}
+      >
+        {showPassword ? "Скрыть пароль" : "Показать пароль"}
+      </button>
 
       <br />
 
