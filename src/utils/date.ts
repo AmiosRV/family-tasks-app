@@ -106,3 +106,143 @@ export function getNextOccurrence(
   ].join('-');
 }
 
+
+function getBerlinDateTimeParts(timestamp: number) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: BERLIN_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(timestamp));
+
+  const get = (type: string) =>
+    Number(parts.find((part) => part.type === type)?.value);
+
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: get('hour'),
+    minute: get('minute'),
+    second: get('second'),
+  };
+}
+
+function getBerlinOffset(timestamp: number): number {
+  const parts = getBerlinDateTimeParts(timestamp);
+
+  const berlinAsUtc = Date.UTC(
+    parts.year,
+    parts.month - 1,
+    parts.day,
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+
+  return berlinAsUtc - Math.floor(timestamp / 1000) * 1000;
+}
+
+/**
+ * Converts a Berlin calendar date and local time into a real Date.
+ *
+ * DST behavior:
+ * - Nonexistent spring time is shifted forward by the DST gap.
+ * - Repeated autumn time uses the earlier occurrence.
+ */
+export function getBerlinDateTimeInstant(
+  date: string,
+  time: string,
+): Date {
+  const { year, month, day } = parseDate(date);
+
+  const timeMatch = /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(time);
+
+  if (!timeMatch) {
+    throw new Error(`Invalid time format: ${time}`);
+  }
+
+  const hour = Number(timeMatch[1]);
+  const minute = Number(timeMatch[2]);
+  const second = Number(timeMatch[3] ?? '0');
+
+  if (hour > 23 || minute > 59 || second > 59) {
+    throw new Error(`Invalid time: ${time}`);
+  }
+
+  const target = {
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second,
+  };
+
+  const wallTime = Date.UTC(
+    year,
+    month - 1,
+    day,
+    hour,
+    minute,
+    second,
+  );
+
+  const offsets = new Set<number>();
+
+  // Collect offsets around the target date, including both DST sides.
+  for (let hours = -36; hours <= 36; hours += 6) {
+    offsets.add(getBerlinOffset(wallTime + hours * 60 * 60 * 1000));
+  }
+
+  const candidates = [...offsets].map((offset) => {
+    const timestamp = wallTime - offset;
+    const local = getBerlinDateTimeParts(timestamp);
+
+    const localWallTime = Date.UTC(
+      local.year,
+      local.month - 1,
+      local.day,
+      local.hour,
+      local.minute,
+      local.second,
+    );
+
+    return {
+      timestamp,
+      localWallTime,
+      matches:
+        local.year === target.year &&
+        local.month === target.month &&
+        local.day === target.day &&
+        local.hour === target.hour &&
+        local.minute === target.minute &&
+        local.second === target.second,
+    };
+  });
+
+  // Autumn: two exact matches. Choose the earlier instant.
+  const exactMatches = candidates
+    .filter((candidate) => candidate.matches)
+    .sort((a, b) => a.timestamp - b.timestamp);
+
+  if (exactMatches.length > 0) {
+    return new Date(exactMatches[0].timestamp);
+  }
+
+  // Spring: the requested local time does not exist.
+  // Choose the first valid local time after the requested one.
+  const afterGap = candidates
+    .filter((candidate) => candidate.localWallTime > wallTime)
+    .sort((a, b) => a.localWallTime - b.localWallTime);
+
+  if (afterGap.length > 0) {
+    return new Date(afterGap[0].timestamp);
+  }
+
+  throw new Error(`Cannot resolve Berlin date and time: ${date} ${time}`);
+}
