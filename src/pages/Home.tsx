@@ -1,5 +1,5 @@
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import {
   formatDateBerlin,
@@ -11,8 +11,6 @@ export default function Home() {
   const [todayReminders, setTodayReminders] = useState<any[]>([]);
   const [overdueReminders, setOverdueReminders] = useState<any[]>([]);
   const [upcomingReminders, setUpcomingReminders] = useState<any[]>([]);
-
-  const checkingNotifications = useRef(false);
 
   function getReminderDeadline(reminder: any): Date {
     const dateOnly = String(reminder.due_date).split('T')[0];
@@ -34,8 +32,6 @@ export default function Home() {
         new Notification('Уведомления включены', {
           body: 'Теперь напоминания смогут показываться',
         });
-
-        await checkNotifications();
       }
     } catch (error) {
       console.error('Ошибка включения уведомлений:', error);
@@ -44,10 +40,8 @@ export default function Home() {
 
   useEffect(() => {
     loadTodayReminders();
-    checkNotifications();
 
     const interval = window.setInterval(() => {
-      checkNotifications();
       loadTodayReminders();
     }, 60000);
 
@@ -114,70 +108,6 @@ export default function Home() {
     setTodayReminders(todayList);
     setOverdueReminders(overdue);
     setUpcomingReminders(upcoming);
-  }
-
-  async function checkNotifications() {
-    if (!('Notification' in window)) return;
-    if (Notification.permission !== 'granted') return;
-    if (checkingNotifications.current) return;
-
-    checkingNotifications.current = true;
-
-    try {
-      const { data, error } = await supabase
-        .from('reminders')
-        .select('*')
-        .eq('is_completed', false)
-        .eq('notified', false);
-
-      if (error) {
-        console.error('Ошибка проверки уведомлений:', error);
-        return;
-      }
-
-      if (!data) return;
-
-      const now = Date.now();
-
-      for (const reminder of data) {
-        if (!reminder.due_date || !reminder.reminder_time) {
-          continue;
-        }
-
-        const reminderDate = getReminderDeadline(reminder);
-
-        if (reminderDate.getTime() <= now) {
-          const { error: updateError } = await supabase
-            .from('reminders')
-            .update({ notified: true })
-            .eq('id', reminder.id)
-            .eq('notified', false);
-
-          if (updateError) {
-            console.error(
-              'Ошибка обновления статуса уведомления:',
-              updateError,
-            );
-            continue;
-          }
-
-          try {
-            new Notification('🔔 Напоминание', {
-              body: reminder.title,
-            });
-          } catch (notificationError) {
-            console.error(
-              'Ошибка отправки уведомления:',
-              notificationError,
-            );
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Ошибка проверки напоминаний:', error);
-    } finally {
-      checkingNotifications.current = false;
-    }
   }
 
   return (

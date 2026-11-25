@@ -1,3 +1,4 @@
+
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Link,
@@ -8,6 +9,7 @@ import {
 import type { Session } from "@supabase/supabase-js";
 
 import { supabase } from "./services/supabase";
+import NotificationManager from "./components/NotificationManager";
 import Home from "./pages/Home";
 import Lists from "./pages/Lists";
 import Reminders from "./pages/Reminders";
@@ -57,6 +59,8 @@ function App() {
 
   return (
     <div>
+      {!loadingSession && session && <NotificationManager />}
+
       {!loadingSession && session && (
         <>
           <nav>
