@@ -51,7 +51,7 @@ export default function NotificationManager() {
 
             if (deadline.getTime() > now) continue;
 
-            // Атомарно пытаемся получить право отправить уведомление.
+            // Получаем право обработать напоминание.
             const { data: claimed, error: claimError } = await supabase
               .from('reminders')
               .update({ notified: true })
@@ -61,11 +61,14 @@ export default function NotificationManager() {
               .select('id');
 
             if (claimError) {
-              console.error('Ошибка обновления уведомления:', claimError);
+              console.error(
+                'Ошибка обновления уведомления:',
+                claimError,
+              );
               continue;
             }
 
-            // Если запись уже обработана другой вкладкой — пропускаем.
+            // Другая вкладка уже обработала запись.
             if (!claimed || claimed.length === 0) continue;
 
             try {
@@ -77,6 +80,20 @@ export default function NotificationManager() {
                 'Ошибка показа уведомления:',
                 notificationError,
               );
+
+              // Возвращаем возможность повторной отправки.
+              const { error: rollbackError } = await supabase
+                .from('reminders')
+                .update({ notified: false })
+                .eq('id', reminder.id)
+                .eq('notified', true);
+
+              if (rollbackError) {
+                console.error(
+                  'Ошибка возврата статуса уведомления:',
+                  rollbackError,
+                );
+              }
             }
           } catch (reminderError) {
             console.error(
